@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Real Time Strategy Game. Copyright Taukach K. All Rights Reserved.
 
 using UnrealBuildTool;
 
