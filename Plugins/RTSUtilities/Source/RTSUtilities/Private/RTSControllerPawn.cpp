@@ -4,6 +4,11 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "InputAction.h"
+#include "InputActionValue.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "GameFramework/FloatingPawnMovement.h"
 
 ARTSControllerPawn::ARTSControllerPawn()
 {
@@ -18,6 +23,8 @@ ARTSControllerPawn::ARTSControllerPawn()
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
     CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
     CameraComponent->SetProjectionMode(ECameraProjectionMode::Orthographic);
+
+    FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>("FloatingPawnMovement");
 }
 
 void ARTSControllerPawn::BeginPlay()
@@ -33,4 +40,26 @@ void ARTSControllerPawn::Tick(float DeltaTime)
 void ARTSControllerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+    if (auto* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+    {
+        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARTSControllerPawn::Move);
+    }
+}
+
+void ARTSControllerPawn::Move(const FInputActionValue& Value) 
+{
+    const FVector2D MovementInput = Value.Get<FVector2D>();
+
+    if (Controller)
+    {
+        const FRotator Rotation = Controller->GetControlRotation();
+        const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+
+        const FVector ForwartDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+        const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+        AddMovementInput(ForwartDirection, MovementInput.Y);
+        AddMovementInput(RightDirection, MovementInput.X);
+    }
 }

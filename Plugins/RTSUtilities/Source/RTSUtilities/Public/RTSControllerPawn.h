@@ -9,6 +9,10 @@
 class UCapsuleComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class UInputAction;
+class UFloatingPawnMovement;
+
+struct FInputActionValue;
 
 UCLASS()
 class RTSUTILITIES_API ARTSControllerPawn : public APawn
@@ -22,6 +26,14 @@ public:
 
 protected:
     virtual void BeginPlay() override;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    TObjectPtr<UInputAction> MoveAction;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+    TObjectPtr<UFloatingPawnMovement> FloatingPawnMovement;
+
+    void Move(const FInputActionValue& Value);
 
 private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
