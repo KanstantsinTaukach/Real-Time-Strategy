@@ -44,6 +44,7 @@ void ARTSControllerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
     if (auto* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARTSControllerPawn::Move);
+        EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &ARTSControllerPawn::Zoom);
     }
 }
 
@@ -61,5 +62,17 @@ void ARTSControllerPawn::Move(const FInputActionValue& Value)
 
         AddMovementInput(ForwartDirection, MovementInput.Y);
         AddMovementInput(RightDirection, MovementInput.X);
+    }
+}
+
+void ARTSControllerPawn::Zoom(const FInputActionValue& Value) 
+{
+    const float ZoomDirection = Value.Get<float>();
+
+    if (Controller)
+    {
+        float DesiredOrthoWidth = CameraComponent->OrthoWidth + ZoomDirection * CameraZoomSpeed;
+        DesiredOrthoWidth = FMath::Clamp(DesiredOrthoWidth, MinCameraOrthoWidth, MaxCameraOrthoWidth);
+        CameraComponent->OrthoWidth = DesiredOrthoWidth;
     }
 }
