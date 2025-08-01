@@ -12,7 +12,7 @@
 
 ARTSControllerPawn::ARTSControllerPawn()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false;
 
     CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComponent");
     RootComponent = CapsuleComponent;
@@ -30,11 +30,6 @@ ARTSControllerPawn::ARTSControllerPawn()
 void ARTSControllerPawn::BeginPlay()
 {
     Super::BeginPlay();
-}
-
-void ARTSControllerPawn::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
 }
 
 void ARTSControllerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

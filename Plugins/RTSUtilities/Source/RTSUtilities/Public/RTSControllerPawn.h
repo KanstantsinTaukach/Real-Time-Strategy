@@ -21,7 +21,6 @@ class RTSUTILITIES_API ARTSControllerPawn : public APawn
 
 public:
     ARTSControllerPawn();
-    virtual void Tick(float DeltaTime) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:

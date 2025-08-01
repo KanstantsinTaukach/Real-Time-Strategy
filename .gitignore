@@ -484,6 +484,8 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+ParagonGreystone/
+
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
