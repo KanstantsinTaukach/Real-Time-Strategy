@@ -8,6 +8,7 @@
 
 class UCapsuleComponent;
 class USkeletalMeshComponent;
+class UStaticMeshComponent;
 class UFloatingPawnMovement;
 
 UCLASS()
@@ -28,6 +29,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    TObjectPtr<UStaticMeshComponent> SelectedIndicatorComponent;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
     TObjectPtr<UFloatingPawnMovement> FloatingPawnMovement;

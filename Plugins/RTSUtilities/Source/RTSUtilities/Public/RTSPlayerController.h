@@ -7,6 +7,9 @@
 #include "RTSPlayerController.generated.h"
 
 class UInputMappingContext;
+class UInputAction;
+
+struct FInputActionValue;
 
 UCLASS()
 class RTSUTILITIES_API ARTSPlayerController : public APlayerController
@@ -20,5 +23,10 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     TObjectPtr<UInputMappingContext> DefaultInputMappingContext;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    TObjectPtr<UInputAction> SelectAction;
+
     virtual void SetupInputComponent() override;
+
+    void Select(const FInputActionValue& Value);
 };

@@ -3,6 +3,7 @@
 #include "RTSBasePawn.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 
 ARTSBasePawn::ARTSBasePawn()
@@ -11,9 +12,15 @@ ARTSBasePawn::ARTSBasePawn()
 
     CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComponent");
     RootComponent = CapsuleComponent;
+    CapsuleComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
 
     SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
-    SkeletalMeshComponent->SetupAttachment(CapsuleComponent);
+    SkeletalMeshComponent->SetupAttachment(RootComponent);
+
+    SelectedIndicatorComponent = CreateDefaultSubobject<UStaticMeshComponent>("SelectedIndicatorComponent");
+    SelectedIndicatorComponent->SetupAttachment(RootComponent);
+    SelectedIndicatorComponent->SetHiddenInGame(true);
+    SelectedIndicatorComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
     FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>("FloatingPawnMovement");
 }
