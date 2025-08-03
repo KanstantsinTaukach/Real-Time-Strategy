@@ -8,7 +8,6 @@
 
 class UInputMappingContext;
 class UInputAction;
-class ARTSBasePawn;
 
 struct FInputActionValue;
 
@@ -33,5 +32,5 @@ protected:
 
 private:
     UPROPERTY()
-    TObjectPtr<ARTSBasePawn> SelectedPawn;
+    TObjectPtr<AActor> SelectedActor;
 };

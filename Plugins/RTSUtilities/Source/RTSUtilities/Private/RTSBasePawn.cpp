@@ -30,7 +30,7 @@ void ARTSBasePawn::BeginPlay()
     Super::BeginPlay();
 }
 
-void ARTSBasePawn::SelectActor(bool IsSelected)
+void ARTSBasePawn::SelectActor_Implementation(bool IsSelected) 
 {
     SelectedIndicatorComponent->SetHiddenInGame(!IsSelected);
 }

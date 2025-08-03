@@ -6,7 +6,7 @@
 #include "InputMappingContext.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
-#include "RTSBasePawn.h"
+#include "RTSSelectableInterface.h"
 
 ARTSPlayerController::ARTSPlayerController()
 {
@@ -36,19 +36,21 @@ void ARTSPlayerController::Select(const FInputActionValue& Value)
     FHitResult HitResult;
     GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
 
-    AActor* SelectedActor = HitResult.GetActor();
+    if (SelectedActor)
+    {
+        if (SelectedActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
+        {
+            IRTSSelectableInterface::Execute_SelectActor(SelectedActor, false);
+        }
+    }
+
+    SelectedActor = HitResult.GetActor();
 
     if (SelectedActor)
     {
-        if (SelectedPawn)
+        if (SelectedActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
         {
-            SelectedPawn->SelectActor(false);
-        }
-
-        SelectedPawn = Cast<ARTSBasePawn>(SelectedActor);
-        if (SelectedPawn)
-        {
-            SelectedPawn->SelectActor(true);
+            IRTSSelectableInterface::Execute_SelectActor(SelectedActor, true);
         }
     }
 }
