@@ -8,7 +8,7 @@
 
 ARTSBasePawn::ARTSBasePawn()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false;
 
     CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComponent");
     RootComponent = CapsuleComponent;
@@ -30,12 +30,7 @@ void ARTSBasePawn::BeginPlay()
     Super::BeginPlay();
 }
 
-void ARTSBasePawn::Tick(float DeltaTime)
+void ARTSBasePawn::SelectActor(bool IsSelected)
 {
-    Super::Tick(DeltaTime);
-}
-
-void ARTSBasePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
+    SelectedIndicatorComponent->SetHiddenInGame(!IsSelected);
 }

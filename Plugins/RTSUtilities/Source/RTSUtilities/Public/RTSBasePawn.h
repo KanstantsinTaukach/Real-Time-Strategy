@@ -18,8 +18,9 @@ class RTSUTILITIES_API ARTSBasePawn : public APawn
 
 public:
     ARTSBasePawn();
-    virtual void Tick(float DeltaTime) override;
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    UFUNCTION()
+    void SelectActor(bool IsSelected);
 
 protected:
     virtual void BeginPlay() override;

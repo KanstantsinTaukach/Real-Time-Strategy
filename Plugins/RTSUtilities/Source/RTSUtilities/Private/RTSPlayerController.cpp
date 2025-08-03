@@ -6,6 +6,7 @@
 #include "InputMappingContext.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
+#include "RTSBasePawn.h"
 
 ARTSPlayerController::ARTSPlayerController()
 {
@@ -39,6 +40,15 @@ void ARTSPlayerController::Select(const FInputActionValue& Value)
 
     if (SelectedActor)
     {
-        UE_LOG(LogTemp, Display, TEXT("Selected actor: %s"), *SelectedActor->GetName());
+        if (SelectedPawn)
+        {
+            SelectedPawn->SelectActor(false);
+        }
+
+        SelectedPawn = Cast<ARTSBasePawn>(SelectedActor);
+        if (SelectedPawn)
+        {
+            SelectedPawn->SelectActor(true);
+        }
     }
 }

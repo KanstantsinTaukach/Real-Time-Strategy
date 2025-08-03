@@ -8,6 +8,7 @@
 
 class UInputMappingContext;
 class UInputAction;
+class ARTSBasePawn;
 
 struct FInputActionValue;
 
@@ -29,4 +30,8 @@ protected:
     virtual void SetupInputComponent() override;
 
     void Select(const FInputActionValue& Value);
+
+private:
+    UPROPERTY()
+    TObjectPtr<ARTSBasePawn> SelectedPawn;
 };
