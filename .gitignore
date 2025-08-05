@@ -485,6 +485,7 @@ FodyWeavers.xsd
 *.sln.iml
 
 ParagonGreystone/
+UEFab/
 
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
