@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "RTSSelectableInterface.h"
+#include "RTSNavigableInterface.h"
 #include "RTSBasePawn.generated.h"
 
 class UCapsuleComponent;
@@ -13,14 +14,16 @@ class UStaticMeshComponent;
 class UFloatingPawnMovement;
 
 UCLASS()
-class RTSUTILITIES_API ARTSBasePawn : public APawn, public IRTSSelectableInterface
+class RTSUTILITIES_API ARTSBasePawn : public APawn, public IRTSSelectableInterface, public IRTSNavigableInterface
 {
     GENERATED_BODY()
 
 public:
     ARTSBasePawn();
 
-    void SelectActor_Implementation(bool IsSelected) override;
+    void SelectActor_Implementation(const bool IsSelected) override;
+
+    void MoveToLocation_Implementation(const FVector TargetLocation) override;
 
 protected:
     virtual void BeginPlay() override;

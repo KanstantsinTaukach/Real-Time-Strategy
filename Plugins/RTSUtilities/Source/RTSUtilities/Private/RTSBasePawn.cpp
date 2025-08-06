@@ -30,7 +30,14 @@ void ARTSBasePawn::BeginPlay()
     Super::BeginPlay();
 }
 
-void ARTSBasePawn::SelectActor_Implementation(bool IsSelected) 
+void ARTSBasePawn::SelectActor_Implementation(const bool IsSelected) 
 {
     SelectedIndicatorComponent->SetHiddenInGame(!IsSelected);
+}
+
+void ARTSBasePawn::MoveToLocation_Implementation(const FVector TargetLocation) 
+{
+    FVector MoveTargetLocation = TargetLocation;
+    MoveTargetLocation.Z = 0 + CapsuleComponent->GetComponentLocation().Z;
+    SetActorLocation(MoveTargetLocation);
 }

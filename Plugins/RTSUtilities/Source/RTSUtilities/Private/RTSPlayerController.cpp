@@ -7,6 +7,7 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "RTSSelectableInterface.h"
+#include "RTSNavigableInterface.h"
 
 ARTSPlayerController::ARTSPlayerController()
 {
@@ -28,10 +29,11 @@ void ARTSPlayerController::SetupInputComponent()
     if (auto* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
     {
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ARTSPlayerController::Select);
+        EnhancedInputComponent->BindAction(CommandAction, ETriggerEvent::Completed, this, &ARTSPlayerController::CommandSelectedActor);
     }
 }
 
-void ARTSPlayerController::Select(const FInputActionValue& Value) 
+void ARTSPlayerController::Select(const FInputActionValue& Value)
 {
     FHitResult HitResult;
     GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
@@ -54,3 +56,20 @@ void ARTSPlayerController::Select(const FInputActionValue& Value)
         }
     }
 }
+
+    void ARTSPlayerController::CommandSelectedActor(const FInputActionValue& Value)
+    {
+        if (SelectedActor)
+        {
+            if (SelectedActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
+            {
+                FHitResult HitResult;
+                GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
+
+                if (HitResult.bBlockingHit)
+                {
+                    IRTSNavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
+                }
+            }
+        }
+    }

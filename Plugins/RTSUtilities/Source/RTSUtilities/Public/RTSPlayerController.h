@@ -26,9 +26,14 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     TObjectPtr<UInputAction> SelectAction;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    TObjectPtr<UInputAction> CommandAction;
+
     virtual void SetupInputComponent() override;
 
     void Select(const FInputActionValue& Value);
+
+    void CommandSelectedActor(const FInputActionValue& Value);
 
 private:
     UPROPERTY()
