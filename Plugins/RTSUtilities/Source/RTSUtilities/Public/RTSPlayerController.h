@@ -8,6 +8,7 @@
 
 class UInputMappingContext;
 class UInputAction;
+class ARTSHUD;
 
 struct FInputActionValue;
 
@@ -29,13 +30,25 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     TObjectPtr<UInputAction> CommandAction;
 
+    virtual void BeginPlay() override;
+
     virtual void SetupInputComponent() override;
 
     void Select(const FInputActionValue& Value);
+
+    void SelectStart(const FInputActionValue& Value);
+    void SelectOnGoing(const FInputActionValue& Value);
+    void SelectEnd(const FInputActionValue& Value);
 
     void CommandSelectedActor(const FInputActionValue& Value);
 
 private:
     UPROPERTY()
     TObjectPtr<AActor> SelectedActor;
+
+    UPROPERTY()
+    TObjectPtr<ARTSHUD> GameHUD;
+
+    FVector2D SelectionStartPosition;
+    FVector2D SelectionSize;
 };

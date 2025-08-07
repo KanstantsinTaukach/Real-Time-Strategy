@@ -26,6 +26,7 @@ ARTSBasePawn::ARTSBasePawn()
     SelectedIndicatorComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
     FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>("FloatingPawnMovement");
+    FloatingPawnMovement->MaxSpeed = 300.0f;
 }
 
 void ARTSBasePawn::BeginPlay()

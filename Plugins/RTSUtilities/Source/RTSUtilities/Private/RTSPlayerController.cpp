@@ -8,10 +8,18 @@
 #include "InputActionValue.h"
 #include "RTSSelectableInterface.h"
 #include "RTSNavigableInterface.h"
+#include "RTSHUD.h"
 
 ARTSPlayerController::ARTSPlayerController()
 {
     bShowMouseCursor = true;
+}
+
+void ARTSPlayerController::BeginPlay() 
+{
+    Super::BeginPlay();
+
+    GameHUD = Cast<ARTSHUD>(GetHUD());
 }
 
 void ARTSPlayerController::SetupInputComponent()
@@ -29,6 +37,9 @@ void ARTSPlayerController::SetupInputComponent()
     if (auto* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
     {
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ARTSPlayerController::Select);
+        EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Started, this, &ARTSPlayerController::SelectStart);
+        EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Triggered, this, &ARTSPlayerController::SelectOnGoing);
+        EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ARTSPlayerController::SelectEnd);
         EnhancedInputComponent->BindAction(CommandAction, ETriggerEvent::Completed, this, &ARTSPlayerController::CommandSelectedActor);
     }
 }
@@ -57,19 +68,46 @@ void ARTSPlayerController::Select(const FInputActionValue& Value)
     }
 }
 
-    void ARTSPlayerController::CommandSelectedActor(const FInputActionValue& Value)
-    {
-        if (SelectedActor)
-        {
-            if (SelectedActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
-            {
-                FHitResult HitResult;
-                GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
+void ARTSPlayerController::SelectStart(const FInputActionValue& Value) 
+{
+    float MouseX, MouseY;
+    GetMousePosition(MouseX, MouseY);
+    SelectionStartPosition = FVector2d(MouseX, MouseY);
+}
 
-                if (HitResult.bBlockingHit)
-                {
-                    IRTSNavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
-                }
+void ARTSPlayerController::SelectOnGoing(const FInputActionValue& Value) 
+{
+    float MouseX, MouseY;
+    GetMousePosition(MouseX, MouseY);
+    SelectionSize = FVector2d(MouseX - SelectionStartPosition.X, MouseY - SelectionStartPosition.Y);
+
+    if (GameHUD)
+    {
+        GameHUD->ShowSelectionRect(SelectionStartPosition, SelectionSize);
+    }
+}
+
+void ARTSPlayerController::SelectEnd(const FInputActionValue& Value) 
+{
+    if (GameHUD)
+    {
+        GameHUD->HideSelectionRect();
+    }
+}
+
+void ARTSPlayerController::CommandSelectedActor(const FInputActionValue& Value)
+{
+    if (SelectedActor)
+    {
+        if (SelectedActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
+        {
+            FHitResult HitResult;
+            GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
+
+            if (HitResult.bBlockingHit)
+            {
+                IRTSNavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
             }
         }
     }
+}
