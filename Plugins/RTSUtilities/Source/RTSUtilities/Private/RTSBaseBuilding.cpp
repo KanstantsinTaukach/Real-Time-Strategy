@@ -25,15 +25,6 @@ ARTSBaseBuilding::ARTSBaseBuilding()
 void ARTSBaseBuilding::BeginPlay()
 {
     Super::BeginPlay();
-
-    if (BuildingStaticMesh->GetStaticMesh())
-    {
-        FBoxSphereBounds MeshBounds = BuildingStaticMesh->GetStaticMesh()->GetBounds();
-
-        CollisionComponent->SetBoxExtent(MeshBounds.BoxExtent);
-
-        BuildingStaticMesh->SetRelativeLocation(FVector::ZeroVector);
-    }
 }
 
 void ARTSBaseBuilding::SelectActor_Implementation(bool IsSelected)

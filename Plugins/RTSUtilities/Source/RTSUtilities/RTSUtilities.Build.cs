@@ -38,7 +38,8 @@ public class RTSUtilities : ModuleRules
                 "Engine",
                 "Slate",
                 "SlateCore",
-                "EnhancedInput"
+                "EnhancedInput",
+                "AIModule"
             }
             );
 

@@ -52,5 +52,5 @@ private:
     FVector MoveTargetLocation;
     bool bMoving = false;
 
-    void Move();
+    void OrientPawnToMovementDirection();
 };
