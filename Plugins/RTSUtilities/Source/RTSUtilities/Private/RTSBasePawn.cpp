@@ -5,10 +5,11 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ARTSBasePawn::ARTSBasePawn()
 {
-    PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = true;
 
     CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComponent");
     RootComponent = CapsuleComponent;
@@ -30,6 +31,13 @@ void ARTSBasePawn::BeginPlay()
     Super::BeginPlay();
 }
 
+void ARTSBasePawn::Tick(float DeltaTime) 
+{
+    Super::Tick(DeltaTime);
+
+    Move();
+}
+
 void ARTSBasePawn::SelectActor_Implementation(const bool IsSelected) 
 {
     SelectedIndicatorComponent->SetHiddenInGame(!IsSelected);
@@ -37,7 +45,30 @@ void ARTSBasePawn::SelectActor_Implementation(const bool IsSelected)
 
 void ARTSBasePawn::MoveToLocation_Implementation(const FVector TargetLocation) 
 {
-    FVector MoveTargetLocation = TargetLocation;
+    MoveTargetLocation = TargetLocation;
     MoveTargetLocation.Z = 0 + CapsuleComponent->GetComponentLocation().Z;
-    SetActorLocation(MoveTargetLocation);
+
+    bMoving = true;
+}
+
+void ARTSBasePawn::Move()
+{
+    if (!bMoving) return;
+
+    FVector MoveDirection = (MoveTargetLocation - GetActorLocation());
+    if (MoveDirection.Length() < AcceptanceDistance)
+    {
+        bMoving = false;
+        return;
+    }
+
+    MoveDirection.Normalize(1);
+    AddMovementInput(MoveDirection, 1.0f);
+
+    FRotator DesiredRotation = UKismetMathLibrary::MakeRotFromX(MoveDirection);
+    DesiredRotation.Pitch = 0;
+    DesiredRotation.Roll = 0;
+
+    FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), DesiredRotation, GetWorld()->GetDeltaSeconds(), CharacterTurnSpeed);
+    SetActorRotation(NewRotation);
 }
