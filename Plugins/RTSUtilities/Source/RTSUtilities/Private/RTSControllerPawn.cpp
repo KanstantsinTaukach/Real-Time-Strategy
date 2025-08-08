@@ -50,7 +50,7 @@ void ARTSControllerPawn::Move(const FInputActionValue& Value)
     if (Controller)
     {
         const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+        const FRotator YawRotation(0.0, Rotation.Yaw, 0.0);
 
         const FVector ForwartDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
         const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);

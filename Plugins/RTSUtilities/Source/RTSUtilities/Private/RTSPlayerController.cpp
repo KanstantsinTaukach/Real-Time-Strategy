@@ -40,7 +40,7 @@ void ARTSPlayerController::SetupInputComponent()
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Started, this, &ARTSPlayerController::SelectStart);
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Triggered, this, &ARTSPlayerController::SelectOnGoing);
         EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ARTSPlayerController::SelectEnd);
-        EnhancedInputComponent->BindAction(CommandAction, ETriggerEvent::Completed, this, &ARTSPlayerController::CommandSelectedActor);
+        EnhancedInputComponent->BindAction(CommandAction, ETriggerEvent::Completed, this, &ARTSPlayerController::CommandSelectedActors);
     }
 }
 
@@ -113,35 +113,50 @@ void ARTSPlayerController::SelectMultipleActors()
                 }
             }
         }
+        SelectedActors.Empty();
 
-        SelectedActors = GameHUD->GetSelectedActors();
-
-        for (AActor* SomeActor : SelectedActors)
+        TArray<AActor*> AllSelectedActors = GameHUD->GetSelectedActors();
+        for (AActor* SomeActor : AllSelectedActors)
         {
             if (SomeActor)
             {
                 if (SomeActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
                 {
                     IRTSSelectableInterface::Execute_SelectActor(SomeActor, true);
+                    SelectedActors.AddUnique(SomeActor);
                 }
             }
         }
     }
 }
 
-void ARTSPlayerController::CommandSelectedActor(const FInputActionValue& Value)
+void ARTSPlayerController::CommandSelectedActors(const FInputActionValue& Value)
 {
-    if (SelectedActor)
+    FHitResult HitResult;
+    GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
+
+    if (!HitResult.bBlockingHit) return;
+
+    if (SelectedActors.Num() > 0)
+    {
+        int8 i = SelectedActors.Num() / -2;
+        for (auto* SomeActor : SelectedActors)
+        {
+            if (SomeActor)
+            {
+                if (SomeActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
+                {
+                    IRTSNavigableInterface::Execute_MoveToLocation(SomeActor, HitResult.Location + FVector(0.0, 100.0 * i, 0.0));
+                    ++i;
+                }
+            }
+        }
+    }
+    else
     {
         if (SelectedActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
         {
-            FHitResult HitResult;
-            GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
-
-            if (HitResult.bBlockingHit)
-            {
-                IRTSNavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
-            }
+            IRTSNavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
         }
     }
 }

@@ -42,7 +42,7 @@ protected:
 
     void SelectMultipleActors();
 
-    void CommandSelectedActor(const FInputActionValue& Value);
+    void CommandSelectedActors(const FInputActionValue& Value);
 
 private:
     UPROPERTY()
