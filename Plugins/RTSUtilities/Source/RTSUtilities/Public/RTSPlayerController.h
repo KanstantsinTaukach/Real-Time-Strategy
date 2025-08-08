@@ -40,11 +40,16 @@ protected:
     void SelectOnGoing(const FInputActionValue& Value);
     void SelectEnd(const FInputActionValue& Value);
 
+    void SelectMultipleActors();
+
     void CommandSelectedActor(const FInputActionValue& Value);
 
 private:
     UPROPERTY()
     TObjectPtr<AActor> SelectedActor;
+
+    UPROPERTY()
+    TArray<AActor*> SelectedActors;
 
     UPROPERTY()
     TObjectPtr<ARTSHUD> GameHUD;

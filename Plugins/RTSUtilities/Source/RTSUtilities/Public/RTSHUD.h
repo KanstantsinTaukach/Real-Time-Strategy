@@ -19,10 +19,17 @@ private:
 
     FLinearColor SelectionRectColor = FLinearColor(0.0f, 1.0f, 0.0f, 0.3f);
 
+    bool bSelectActors = false;
+    TArray<AActor*> SelectedActors;
+
+    void SelectActorsInRect();
+
 protected:
     virtual void DrawHUD() override;
 
 public:
     void ShowSelectionRect(const FVector2D InSelectionRectStart, const FVector2D InSelectionRectSize);
     void HideSelectionRect();
+
+    TArray<AActor*> GetSelectedActors() const { return SelectedActors; };
 };

@@ -15,7 +15,7 @@ ARTSPlayerController::ARTSPlayerController()
     bShowMouseCursor = true;
 }
 
-void ARTSPlayerController::BeginPlay() 
+void ARTSPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -68,14 +68,14 @@ void ARTSPlayerController::Select(const FInputActionValue& Value)
     }
 }
 
-void ARTSPlayerController::SelectStart(const FInputActionValue& Value) 
+void ARTSPlayerController::SelectStart(const FInputActionValue& Value)
 {
     float MouseX, MouseY;
     GetMousePosition(MouseX, MouseY);
     SelectionStartPosition = FVector2d(MouseX, MouseY);
 }
 
-void ARTSPlayerController::SelectOnGoing(const FInputActionValue& Value) 
+void ARTSPlayerController::SelectOnGoing(const FInputActionValue& Value)
 {
     float MouseX, MouseY;
     GetMousePosition(MouseX, MouseY);
@@ -87,11 +87,45 @@ void ARTSPlayerController::SelectOnGoing(const FInputActionValue& Value)
     }
 }
 
-void ARTSPlayerController::SelectEnd(const FInputActionValue& Value) 
+void ARTSPlayerController::SelectEnd(const FInputActionValue& Value)
 {
     if (GameHUD)
     {
         GameHUD->HideSelectionRect();
+
+        FTimerHandle SelectMultipleActorsTimerHandle;
+        GetWorld()->GetTimerManager().SetTimer(
+            SelectMultipleActorsTimerHandle, this, &ARTSPlayerController::SelectMultipleActors, 0.05f, false);
+    }
+}
+
+void ARTSPlayerController::SelectMultipleActors()
+{
+    if (GameHUD)
+    {
+        for (AActor* SomeActor : SelectedActors)
+        {
+            if (SomeActor)
+            {
+                if (SomeActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
+                {
+                    IRTSSelectableInterface::Execute_SelectActor(SomeActor, false);
+                }
+            }
+        }
+
+        SelectedActors = GameHUD->GetSelectedActors();
+
+        for (AActor* SomeActor : SelectedActors)
+        {
+            if (SomeActor)
+            {
+                if (SomeActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
+                {
+                    IRTSSelectableInterface::Execute_SelectActor(SomeActor, true);
+                }
+            }
+        }
     }
 }
 
