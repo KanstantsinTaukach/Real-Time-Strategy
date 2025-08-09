@@ -21,6 +21,7 @@ class RTSUTILITIES_API ARTSControllerPawn : public APawn
 
 public:
     ARTSControllerPawn();
+    virtual void Tick(float DeltaTime) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
@@ -38,6 +39,8 @@ protected:
     void Move(const FInputActionValue& Value);
 
     void Zoom(const FInputActionValue& Value);
+
+    void EdgeScrollWithMouse();
 
 private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))

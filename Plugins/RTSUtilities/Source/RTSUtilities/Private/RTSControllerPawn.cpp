@@ -12,7 +12,7 @@
 
 ARTSControllerPawn::ARTSControllerPawn()
 {
-    PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = true;
 
     CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComponent");
     RootComponent = CapsuleComponent;
@@ -30,6 +30,13 @@ ARTSControllerPawn::ARTSControllerPawn()
 void ARTSControllerPawn::BeginPlay()
 {
     Super::BeginPlay();
+}
+
+void ARTSControllerPawn::Tick(float DeltaTime) 
+{
+    Super::Tick(DeltaTime);
+
+    EdgeScrollWithMouse();
 }
 
 void ARTSControllerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -69,5 +76,47 @@ void ARTSControllerPawn::Zoom(const FInputActionValue& Value)
         float DesiredOrthoWidth = CameraComponent->OrthoWidth + ZoomDirection * CameraZoomSpeed;
         DesiredOrthoWidth = FMath::Clamp(DesiredOrthoWidth, MinCameraOrthoWidth, MaxCameraOrthoWidth);
         CameraComponent->OrthoWidth = DesiredOrthoWidth;
+    }
+}
+
+void ARTSControllerPawn::EdgeScrollWithMouse()
+{
+    APlayerController* PlayerController = Cast<APlayerController>(Controller);
+    if (!PlayerController) return;
+
+    float MouseX = 0.0f, MouseY = 0.0f;
+    if (PlayerController->GetMousePosition(MouseX, MouseY))
+    {
+        FVector2d VeiwportSize;
+        if (GEngine && GEngine->GameViewport)
+        {
+            GEngine->GameViewport->GetViewportSize(VeiwportSize);
+
+            float EdgeThresholdX = VeiwportSize.X / 100 * 5;
+            float EdgeThresholdY = VeiwportSize.Y / 100 * 5;
+            FVector2D MovementInput = FVector2D::ZeroVector;
+
+            if (MouseX < EdgeThresholdX)
+            {
+                MovementInput.X = -1.0f;
+            }
+            if (MouseX > (VeiwportSize.X - EdgeThresholdX))
+            {
+                MovementInput.X = 1.0f;
+            }
+            if (MouseY < EdgeThresholdY)
+            {
+                MovementInput.Y = 1.0f;
+            }
+            if (MouseY > (VeiwportSize.Y - EdgeThresholdY))
+            {
+                MovementInput.Y = -1.0f;
+            }
+
+            if (!MovementInput.IsNearlyZero())
+            {
+                Move(FInputActionValue(MovementInput));
+            }
+        }
     }
 }
