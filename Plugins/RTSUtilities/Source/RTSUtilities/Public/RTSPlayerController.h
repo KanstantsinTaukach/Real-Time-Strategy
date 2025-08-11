@@ -12,6 +12,8 @@ class ARTSHUD;
 
 struct FInputActionValue;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorsSelectedSignature, const TArray<AActor*>&, InSelectedActors);
+
 UCLASS()
 class RTSUTILITIES_API ARTSPlayerController : public APlayerController
 {
@@ -45,6 +47,9 @@ protected:
     void CommandSelectedActors(const FInputActionValue& Value);
 
 private:
+    UPROPERTY(BlueprintAssignable, Category = "Delegates")
+    FOnActorsSelectedSignature OnActorsSelected;
+
     UPROPERTY()
     TObjectPtr<AActor> SelectedActor;
 

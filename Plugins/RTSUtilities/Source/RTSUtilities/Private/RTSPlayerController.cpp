@@ -127,6 +127,8 @@ void ARTSPlayerController::SelectMultipleActors()
                 }
             }
         }
+
+        OnActorsSelected.Broadcast(SelectedActors);
     }
 }
 
@@ -154,7 +156,7 @@ void ARTSPlayerController::CommandSelectedActors(const FInputActionValue& Value)
     }
     else
     {
-        if (SelectedActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
+        if (SelectedActor && SelectedActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
         {
             IRTSNavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
         }
