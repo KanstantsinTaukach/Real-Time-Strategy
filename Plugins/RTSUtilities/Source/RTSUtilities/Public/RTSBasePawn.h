@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "RTSSelectableInterface.h"
 #include "RTSNavigableInterface.h"
+#include "RTSBasePawnInterface.h"
+#include "RTSLib.h"
 #include "RTSBasePawn.generated.h"
 
 class UCapsuleComponent;
@@ -14,7 +16,7 @@ class UStaticMeshComponent;
 class UFloatingPawnMovement;
 
 UCLASS()
-class RTSUTILITIES_API ARTSBasePawn : public APawn, public IRTSSelectableInterface, public IRTSNavigableInterface
+class RTSUTILITIES_API ARTSBasePawn : public APawn, public IRTSSelectableInterface, public IRTSNavigableInterface, public IRTSBasePawnInterface
 {
     GENERATED_BODY()
 
@@ -26,6 +28,8 @@ public:
     void SelectActor_Implementation(const bool IsSelected) override;
 
     void MoveToLocation_Implementation(const FVector TargetLocation) override;
+
+    EPawnType GetPawnType_Implementation() override { return PawnType; } 
 
 protected:
     virtual void BeginPlay() override;
@@ -41,6 +45,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     TObjectPtr<UFloatingPawnMovement> FloatingPawnMovement;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnType")
+    EPawnType PawnType = EPawnType::Villager;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
     float AcceptanceDistance = 50.0f;

@@ -11,3 +11,11 @@ enum class EResourceTypes : uint8
     Stone UMETA(DisplayName = "Stone"),
     Population UMETA(DisplayName = "Population")
 };
+
+UENUM(BlueprintType)
+enum class EPawnType : uint8
+{
+    Villager UMETA(DisplayName = "Villager"),
+    Knight UMETA(DisplayName = "Knight"),
+    Paladin UMETA(DisplayName = "Paladin")
+};
