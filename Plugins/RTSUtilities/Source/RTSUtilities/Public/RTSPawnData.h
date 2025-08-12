@@ -18,7 +18,7 @@ struct FPawnData : public FTableRowBase
     FString DisplayName;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pawn")
-    TSoftObjectPtr<UTexture2D> Texture;
+    UTexture2D* Texture;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pawn")
     int32 CurrentHealth;
