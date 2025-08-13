@@ -7,6 +7,7 @@
 #include "RTSSelectableInterface.h"
 #include "RTSNavigableInterface.h"
 #include "RTSBasePawnInterface.h"
+#include "RTSFactionInterface.h"
 #include "RTSLib.h"
 #include "RTSBasePawn.generated.h"
 
@@ -16,7 +17,7 @@ class UStaticMeshComponent;
 class UFloatingPawnMovement;
 
 UCLASS()
-class RTSUTILITIES_API ARTSBasePawn : public APawn, public IRTSSelectableInterface, public IRTSNavigableInterface, public IRTSBasePawnInterface
+class RTSUTILITIES_API ARTSBasePawn : public APawn, public IRTSSelectableInterface, public IRTSNavigableInterface, public IRTSBasePawnInterface, public IRTSFactionInterface
 {
     GENERATED_BODY()
 
@@ -30,6 +31,9 @@ public:
     void MoveToLocation_Implementation(const FVector TargetLocation) override;
 
     EPawnType GetPawnType_Implementation() override { return PawnType; } 
+
+    int32 GetFaction_Implementation() override { return FactionID; };
+    void SetFaction_Implementation(int32 NewFaction) override { FactionID = NewFaction; };
 
 protected:
     virtual void BeginPlay() override;
@@ -46,8 +50,11 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     TObjectPtr<UFloatingPawnMovement> FloatingPawnMovement;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnType")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pawn")
     EPawnType PawnType = EPawnType::Villager;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pawn")
+    int32 FactionID = 0;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
     float AcceptanceDistance = 50.0f;

@@ -41,25 +41,6 @@ void ARTSBasePawn::Tick(float DeltaTime)
     OrientPawnToMovementDirection();
 }
 
-void ARTSBasePawn::SelectActor_Implementation(const bool IsSelected) 
-{
-    SelectedIndicatorComponent->SetHiddenInGame(!IsSelected);
-}
-
-void ARTSBasePawn::MoveToLocation_Implementation(const FVector TargetLocation) 
-{
-    MoveTargetLocation = TargetLocation;
-    MoveTargetLocation.Z = 0 + CapsuleComponent->GetComponentLocation().Z;
-
-    bMoving = true;
-
-    AAIController* PawnAIController = Cast<AAIController>(GetController());
-    if (PawnAIController)
-    {
-        PawnAIController->MoveToLocation(MoveTargetLocation, AcceptanceDistance);
-    }
-}
-
 void ARTSBasePawn::OrientPawnToMovementDirection()
 {
     if (!bMoving) return;
@@ -79,4 +60,23 @@ void ARTSBasePawn::OrientPawnToMovementDirection()
 
     FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), DesiredRotation, GetWorld()->GetDeltaSeconds(), CharacterTurnSpeed);
     SetActorRotation(NewRotation);
+}
+
+void ARTSBasePawn::SelectActor_Implementation(const bool IsSelected) 
+{
+    SelectedIndicatorComponent->SetHiddenInGame(!IsSelected);
+}
+
+void ARTSBasePawn::MoveToLocation_Implementation(const FVector TargetLocation) 
+{
+    MoveTargetLocation = TargetLocation;
+    MoveTargetLocation.Z = 0 + CapsuleComponent->GetComponentLocation().Z;
+
+    bMoving = true;
+
+    AAIController* PawnAIController = Cast<AAIController>(GetController());
+    if (PawnAIController)
+    {
+        PawnAIController->MoveToLocation(MoveTargetLocation, AcceptanceDistance);
+    }
 }
