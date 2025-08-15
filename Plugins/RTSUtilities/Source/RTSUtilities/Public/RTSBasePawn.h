@@ -33,7 +33,7 @@ public:
     EPawnType GetPawnType_Implementation() override { return PawnType; } 
 
     int32 GetFaction_Implementation() override { return FactionID; };
-    void SetFaction_Implementation(int32 NewFaction) override { FactionID = NewFaction; };
+    void SetFaction_Implementation(int32 NewFaction) override;
 
 protected:
     virtual void BeginPlay() override;
@@ -53,8 +53,11 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pawn")
     EPawnType PawnType = EPawnType::Villager;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pawn")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn")
     int32 FactionID = 0;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Design")
+    TObjectPtr<UDataTable> FactionTable;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
     float AcceptanceDistance = 50.0f;

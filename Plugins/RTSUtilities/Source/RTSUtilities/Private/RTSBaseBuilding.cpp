@@ -3,6 +3,7 @@
 #include "RTSBaseBuilding.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "RTSFactionData.h"
 
 ARTSBaseBuilding::ARTSBaseBuilding()
 {
@@ -25,9 +26,29 @@ ARTSBaseBuilding::ARTSBaseBuilding()
 void ARTSBaseBuilding::BeginPlay()
 {
     Super::BeginPlay();
+
+    check(FactionTable);
+    //Execute_SetFaction(this, FactionID);
 }
 
 void ARTSBaseBuilding::SelectActor_Implementation(bool IsSelected)
 {
     SelectedIndicatorComponent->SetHiddenInGame(!IsSelected);
+}
+
+void ARTSBaseBuilding::SetFaction_Implementation(int32 NewFaction)
+{
+    if (NewFaction < 0) return;
+
+    FactionID = NewFaction;
+
+    const auto RowName = FactionTable->GetRowNames()[NewFaction];
+    auto* FactionData = FactionTable->FindRow<FFactionData>(RowName, {});
+
+    if (FactionData)
+    {
+        FVector ColorVector = FVector(FactionData->FactionColor.R, FactionData->FactionColor.G, FactionData->FactionColor.B);
+        BuildingStaticMesh->SetVectorParameterValueOnMaterials("FactionColor", ColorVector);
+        SelectedIndicatorComponent->SetVectorParameterValueOnMaterials("FactionColor", ColorVector);
+    }
 }

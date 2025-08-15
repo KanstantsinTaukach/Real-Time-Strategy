@@ -7,6 +7,7 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AIController.h"
+#include "RTSFactionData.h"
 
 ARTSBasePawn::ARTSBasePawn()
 {
@@ -32,9 +33,12 @@ ARTSBasePawn::ARTSBasePawn()
 void ARTSBasePawn::BeginPlay()
 {
     Super::BeginPlay();
+
+    check(FactionTable);
+    //Execute_SetFaction(this, FactionID);
 }
 
-void ARTSBasePawn::Tick(float DeltaTime) 
+void ARTSBasePawn::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
@@ -62,12 +66,12 @@ void ARTSBasePawn::OrientPawnToMovementDirection()
     SetActorRotation(NewRotation);
 }
 
-void ARTSBasePawn::SelectActor_Implementation(const bool IsSelected) 
+void ARTSBasePawn::SelectActor_Implementation(const bool IsSelected)
 {
     SelectedIndicatorComponent->SetHiddenInGame(!IsSelected);
 }
 
-void ARTSBasePawn::MoveToLocation_Implementation(const FVector TargetLocation) 
+void ARTSBasePawn::MoveToLocation_Implementation(const FVector TargetLocation)
 {
     MoveTargetLocation = TargetLocation;
     MoveTargetLocation.Z = 0 + CapsuleComponent->GetComponentLocation().Z;
@@ -78,5 +82,22 @@ void ARTSBasePawn::MoveToLocation_Implementation(const FVector TargetLocation)
     if (PawnAIController)
     {
         PawnAIController->MoveToLocation(MoveTargetLocation, AcceptanceDistance);
+    }
+}
+
+void ARTSBasePawn::SetFaction_Implementation(int32 NewFaction)
+{
+    if (NewFaction < 0) return;
+
+    FactionID = NewFaction;
+
+    const auto RowName = FactionTable->GetRowNames()[NewFaction];
+    auto* FactionData = FactionTable->FindRow<FFactionData>(RowName, {});
+
+    if (FactionData)
+    {
+        FVector ColorVector = FVector(FactionData->FactionColor.R, FactionData->FactionColor.G, FactionData->FactionColor.B);
+        SkeletalMeshComponent->SetVectorParameterValueOnMaterials("FactionColor", ColorVector);
+        SelectedIndicatorComponent->SetVectorParameterValueOnMaterials("FactionColor", ColorVector);
     }
 }
