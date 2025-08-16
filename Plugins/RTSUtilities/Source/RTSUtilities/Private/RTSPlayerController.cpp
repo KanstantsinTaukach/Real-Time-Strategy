@@ -55,6 +55,12 @@ void ARTSPlayerController::Select(const FInputActionValue& Value)
         IRTSSelectableInterface::Execute_SelectActor(SelectedActor, false);
     }
 
+    FVector2D CurrentMousePosition;
+    GetMousePosition(CurrentMousePosition.X, CurrentMousePosition.Y);
+
+    float DragDistance = (CurrentMousePosition - SelectionStartPosition).Size();
+    if (DragDistance > 5.0f) return;
+
     SelectedActor = HitResult.GetActor();
 
     if (SelectedActor && SelectedActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
@@ -151,15 +157,17 @@ void ARTSPlayerController::CommandSelectedActors(const FInputActionValue& Value)
     }
     else
     {
+        if (SelectedActor && SelectedActor->GetClass()->ImplementsInterface(URTSFactionInterface::StaticClass()))
+        {
+            if (FactionID != IRTSFactionInterface::Execute_GetFaction(SelectedActor))
+            {
+                return;
+            }
+        }
+
         if (SelectedActor && SelectedActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
         {
-            if (SelectedActor->GetClass()->ImplementsInterface(URTSFactionInterface::StaticClass()))
-            {
-                if (FactionID == IRTSFactionInterface::Execute_GetFaction(SelectedActor))
-                {
-                    IRTSNavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
-                }
-            }
+            IRTSNavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
         }
     }
 }
