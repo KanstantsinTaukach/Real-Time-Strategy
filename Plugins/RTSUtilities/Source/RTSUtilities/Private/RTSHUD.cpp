@@ -1,6 +1,7 @@
 // Real Time Strategy Game. Copyright Taukach K. All Rights Reserved.
 
 #include "RTSHUD.h"
+#include "RTSBasePawn.h"
 
 void ARTSHUD::DrawHUD()
 {
@@ -36,6 +37,6 @@ void ARTSHUD::SelectActorsInRect()
     FVector2D FirstPoint = SelectionRectStart;
     FVector2D SecondPoint = SelectionRectStart + SelectionRectSize;
 
-    GetActorsInSelectionRectangle<AActor>(FirstPoint, SecondPoint, SelectedActors, false);
+    GetActorsInSelectionRectangle<ARTSBasePawn>(FirstPoint, SecondPoint, SelectedActors, false);
     bSelectActors = false;
 }

@@ -6,6 +6,8 @@
 #include "GameFramework/HUD.h"
 #include "RTSHUD.generated.h"
 
+class ARTSBasePawn;
+
 UCLASS()
 class RTSUTILITIES_API ARTSHUD : public AHUD
 {
@@ -20,7 +22,7 @@ private:
     FLinearColor SelectionRectColor = FLinearColor(0.0f, 1.0f, 0.0f, 0.3f);
 
     bool bSelectActors = false;
-    TArray<AActor*> SelectedActors;
+    TArray<ARTSBasePawn*> SelectedActors;
 
     void SelectActorsInRect();
 
@@ -31,5 +33,5 @@ public:
     void ShowSelectionRect(const FVector2D InSelectionRectStart, const FVector2D InSelectionRectSize);
     void HideSelectionRect();
 
-    TArray<AActor*> GetSelectedActors() const { return SelectedActors; };
+    TArray<ARTSBasePawn*> GetSelectedActors() const { return SelectedActors; };
 };

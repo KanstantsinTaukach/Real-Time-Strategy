@@ -17,7 +17,11 @@ class UStaticMeshComponent;
 class UFloatingPawnMovement;
 
 UCLASS()
-class RTSUTILITIES_API ARTSBasePawn : public APawn, public IRTSSelectableInterface, public IRTSNavigableInterface, public IRTSBasePawnInterface, public IRTSFactionInterface
+class RTSUTILITIES_API ARTSBasePawn : public APawn,
+                                      public IRTSSelectableInterface,
+                                      public IRTSNavigableInterface,
+                                      public IRTSBasePawnInterface,
+                                      public IRTSFactionInterface
 {
     GENERATED_BODY()
 
@@ -30,7 +34,7 @@ public:
 
     void MoveToLocation_Implementation(const FVector TargetLocation) override;
 
-    EPawnType GetPawnType_Implementation() override { return PawnType; } 
+    EPawnType GetPawnType_Implementation() override { return PawnType; }
 
     int32 GetFaction_Implementation() override { return FactionID; };
     void SetFaction_Implementation(int32 NewFaction) override;

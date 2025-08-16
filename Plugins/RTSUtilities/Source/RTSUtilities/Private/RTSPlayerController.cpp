@@ -9,6 +9,7 @@
 #include "RTSSelectableInterface.h"
 #include "RTSNavigableInterface.h"
 #include "RTSHUD.h"
+#include "RTSBasePawn.h"
 
 ARTSPlayerController::ARTSPlayerController()
 {
@@ -49,22 +50,16 @@ void ARTSPlayerController::Select(const FInputActionValue& Value)
     FHitResult HitResult;
     GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
 
-    if (SelectedActor)
+    if (SelectedActor && SelectedActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
     {
-        if (SelectedActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
-        {
-            IRTSSelectableInterface::Execute_SelectActor(SelectedActor, false);
-        }
+        IRTSSelectableInterface::Execute_SelectActor(SelectedActor, false);
     }
 
     SelectedActor = HitResult.GetActor();
 
-    if (SelectedActor)
+    if (SelectedActor && SelectedActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
     {
-        if (SelectedActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
-        {
-            IRTSSelectableInterface::Execute_SelectActor(SelectedActor, true);
-        }
+        IRTSSelectableInterface::Execute_SelectActor(SelectedActor, true);
     }
 }
 
@@ -103,28 +98,31 @@ void ARTSPlayerController::SelectMultipleActors()
 {
     if (GameHUD)
     {
-        for (AActor* SomeActor : SelectedActors)
+        for (auto* SomeActor : SelectedActors)
         {
-            if (SomeActor)
+            if (SomeActor && SomeActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
             {
-                if (SomeActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
-                {
-                    IRTSSelectableInterface::Execute_SelectActor(SomeActor, false);
-                }
+                IRTSSelectableInterface::Execute_SelectActor(SomeActor, false);
             }
         }
         SelectedActors.Empty();
 
-        TArray<AActor*> AllSelectedActors = GameHUD->GetSelectedActors();
-        for (AActor* SomeActor : AllSelectedActors)
+        TArray<ARTSBasePawn*> AllSelectedActors = GameHUD->GetSelectedActors();
+        for (auto* SomeActor : AllSelectedActors)
         {
-            if (SomeActor)
+            if (SomeActor && SomeActor->GetClass()->ImplementsInterface(URTSFactionInterface::StaticClass()))
             {
-                if (SomeActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
+                int32 ActorFaction = IRTSFactionInterface::Execute_GetFaction(SomeActor);
+                if (FactionID != ActorFaction)
                 {
-                    IRTSSelectableInterface::Execute_SelectActor(SomeActor, true);
-                    SelectedActors.AddUnique(SomeActor);
+                    continue;
                 }
+            }
+
+            if (SomeActor && SomeActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
+            {
+                IRTSSelectableInterface::Execute_SelectActor(SomeActor, true);
+                SelectedActors.AddUnique(SomeActor);
             }
         }
 
@@ -144,13 +142,10 @@ void ARTSPlayerController::CommandSelectedActors(const FInputActionValue& Value)
         int8 i = SelectedActors.Num() / -2;
         for (auto* SomeActor : SelectedActors)
         {
-            if (SomeActor)
+            if (SomeActor && SomeActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
             {
-                if (SomeActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
-                {
-                    IRTSNavigableInterface::Execute_MoveToLocation(SomeActor, HitResult.Location + FVector(0.0, 100.0 * i, 0.0));
-                    ++i;
-                }
+                IRTSNavigableInterface::Execute_MoveToLocation(SomeActor, HitResult.Location + FVector(0.0, 100.0 * i, 0.0));
+                ++i;
             }
         }
     }
@@ -158,7 +153,13 @@ void ARTSPlayerController::CommandSelectedActors(const FInputActionValue& Value)
     {
         if (SelectedActor && SelectedActor->GetClass()->ImplementsInterface(URTSNavigableInterface::StaticClass()))
         {
-            IRTSNavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
+            if (SelectedActor->GetClass()->ImplementsInterface(URTSFactionInterface::StaticClass()))
+            {
+                if (FactionID == IRTSFactionInterface::Execute_GetFaction(SelectedActor))
+                {
+                    IRTSNavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
+                }
+            }
         }
     }
 }

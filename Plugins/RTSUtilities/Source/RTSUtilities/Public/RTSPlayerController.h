@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "RTSFactionInterface.h"
 #include "RTSPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -15,7 +16,7 @@ struct FInputActionValue;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorsSelectedSignature, const TArray<AActor*>&, InSelectedActors);
 
 UCLASS()
-class RTSUTILITIES_API ARTSPlayerController : public APlayerController
+class RTSUTILITIES_API ARTSPlayerController : public APlayerController, public IRTSFactionInterface
 {
     GENERATED_BODY()
 
@@ -32,6 +33,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     TObjectPtr<UInputAction> CommandAction;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Faction")
+    int32 FactionID = 0;
+
     virtual void BeginPlay() override;
 
     virtual void SetupInputComponent() override;
@@ -45,6 +49,9 @@ protected:
     void SelectMultipleActors();
 
     void CommandSelectedActors(const FInputActionValue& Value);
+
+    int32 GetFaction_Implementation() override { return FactionID; };
+    void SetFaction_Implementation(int32 NewFaction) override { FactionID = NewFaction; };
 
 private:
     UPROPERTY(BlueprintAssignable, Category = "Delegates")

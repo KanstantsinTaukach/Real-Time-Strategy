@@ -28,7 +28,6 @@ void ARTSBaseBuilding::BeginPlay()
     Super::BeginPlay();
 
     check(FactionTable);
-    //Execute_SetFaction(this, FactionID);
 }
 
 void ARTSBaseBuilding::SelectActor_Implementation(bool IsSelected)

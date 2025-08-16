@@ -35,7 +35,6 @@ void ARTSBasePawn::BeginPlay()
     Super::BeginPlay();
 
     check(FactionTable);
-    //Execute_SetFaction(this, FactionID);
 }
 
 void ARTSBasePawn::Tick(float DeltaTime)
