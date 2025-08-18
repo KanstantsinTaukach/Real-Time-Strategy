@@ -66,6 +66,25 @@ void ARTSPlayerController::Select(const FInputActionValue& Value)
     if (SelectedActor && SelectedActor->GetClass()->ImplementsInterface(URTSSelectableInterface::StaticClass()))
     {
         IRTSSelectableInterface::Execute_SelectActor(SelectedActor, true);
+
+        if (SelectedActor && SelectedActor->GetClass()->ImplementsInterface(URTSFactionInterface::StaticClass()))
+        {
+            if (FactionID == IRTSFactionInterface::Execute_GetFaction(SelectedActor))
+            {
+                if (SelectedActors.Num() > 0)
+                {
+                    for (auto* SomeActor : SelectedActors)
+                    {
+                        IRTSSelectableInterface::Execute_SelectActor(SomeActor, false);
+                    }
+
+                    SelectedActors.Empty();
+                }
+
+                SelectedActors.AddUnique(SelectedActor);
+                OnActorsSelected.Broadcast(SelectedActors);
+            }
+        }
     }
 }
 
