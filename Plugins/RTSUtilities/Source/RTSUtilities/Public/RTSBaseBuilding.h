@@ -10,6 +10,9 @@
 
 class UBoxComponent;
 class UStaticMeshComponent;
+class UInputAction;
+
+struct FInputActionValue;
 
 UCLASS()
 class RTSUTILITIES_API ARTSBaseBuilding : public AActor, public IRTSSelectableInterface, public IRTSFactionInterface
@@ -23,6 +26,15 @@ public:
 
     int32 GetFaction_Implementation() override { return FactionID; };
     void SetFaction_Implementation(int32 NewFaction) override;
+
+    UFUNCTION(BlueprintCallable, Category = "Building")
+    void EnablePlacingMode();
+
+    void CheckPlacementValidity();
+
+    void PlaceBuilding(const FInputActionValue& Value);
+
+    void CancelBuildingPlacement(const FInputActionValue& Value);
 
 protected:
     virtual void BeginPlay() override;
@@ -41,4 +53,11 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Design")
     TObjectPtr<UDataTable> FactionTable;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building")
+    TObjectPtr<UInputAction> PlaceAction;
+
+private:
+    UPROPERTY()
+    FTimerHandle PlacementValidationTimer;
 };

@@ -4,6 +4,8 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "RTSFactionData.h"
+#include "EnhancedInputComponent.h"
+#include "InputActionValue.h"
 
 ARTSBaseBuilding::ARTSBaseBuilding()
 {
@@ -50,4 +52,51 @@ void ARTSBaseBuilding::SetFaction_Implementation(int32 NewFaction)
         BuildingStaticMesh->SetVectorParameterValueOnMaterials("FactionColor", ColorVector);
         SelectedIndicatorComponent->SetVectorParameterValueOnMaterials("FactionColor", ColorVector);
     }
+}
+
+void ARTSBaseBuilding::EnablePlacingMode() 
+{
+    if (!GetWorld()) return;
+
+    APlayerController* PC = GetWorld()->GetFirstPlayerController();
+    if (PC)
+    {
+        EnableInput(PC);
+
+        UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PC->InputComponent);
+        if (EnhancedInputComponent)
+        {
+            EnhancedInputComponent->BindAction(PlaceAction, ETriggerEvent::Completed, this, &ARTSBaseBuilding::PlaceBuilding);
+        }
+    }
+
+    GetWorld()->GetTimerManager().SetTimer(PlacementValidationTimer, this, &ARTSBaseBuilding::CheckPlacementValidity, 0.05f, true);
+
+    this->SetActorEnableCollision(false);
+}
+
+void ARTSBaseBuilding::CheckPlacementValidity() 
+{
+    if (!GetWorld()) return;
+
+    FHitResult HitResult;
+    GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+    if (HitResult.bBlockingHit)
+    {
+        SetActorLocation(HitResult.Location);
+    }
+}
+
+void ARTSBaseBuilding::PlaceBuilding(const FInputActionValue& Value)
+{
+    if (!GetWorld()) return;
+
+    GetWorld()->GetTimerManager().ClearTimer(PlacementValidationTimer);
+
+    this->SetActorEnableCollision(true);
+}
+
+void ARTSBaseBuilding::CancelBuildingPlacement(const FInputActionValue& Value) 
+{
+
 }
