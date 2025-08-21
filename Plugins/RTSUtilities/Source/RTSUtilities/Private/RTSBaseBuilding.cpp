@@ -30,6 +30,8 @@ void ARTSBaseBuilding::BeginPlay()
     Super::BeginPlay();
 
     check(FactionTable);
+
+    PlacementZOffset = CollisionComponent->GetScaledBoxExtent().Z;
 }
 
 void ARTSBaseBuilding::SelectActor_Implementation(bool IsSelected)
@@ -54,7 +56,7 @@ void ARTSBaseBuilding::SetFaction_Implementation(int32 NewFaction)
     }
 }
 
-void ARTSBaseBuilding::EnablePlacingMode() 
+void ARTSBaseBuilding::EnablePlacingMode()
 {
     if (!GetWorld()) return;
 
@@ -70,33 +72,78 @@ void ARTSBaseBuilding::EnablePlacingMode()
         }
     }
 
-    GetWorld()->GetTimerManager().SetTimer(PlacementValidationTimer, this, &ARTSBaseBuilding::CheckPlacementValidity, 0.05f, true);
+    GetWorld()->GetTimerManager().SetTimer(PlacementValidationTimer, this, &ARTSBaseBuilding::CheckPlacementValidity, 0.03f, true);
 
     this->SetActorEnableCollision(false);
 }
 
-void ARTSBaseBuilding::CheckPlacementValidity() 
+void ARTSBaseBuilding::CheckPlacementValidity()
 {
+    ToggleBuildingValidity(bCanPlaceBuilding);
+    bCanPlaceBuilding = false;
+
     if (!GetWorld()) return;
 
+    APlayerController* PC = GetWorld()->GetFirstPlayerController();
+    if (!PC) return;
+
     FHitResult HitResult;
-    GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
-    if (HitResult.bBlockingHit)
-    {
-        SetActorLocation(HitResult.Location);
-    }
+    PC->GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+    if (!HitResult.bBlockingHit) return;
+
+    FVector TargetLocation = HitResult.Location;
+    TargetLocation.Z += PlacementZOffset;
+    SetActorLocation(TargetLocation);
+
+    if (!HasPlacementTag(HitResult, RequiredTag)) return;
+
+    FVector TraceStart = HitResult.Location + FVector(0.0, 0.0, PlacementZOffset);
+    FVector TraceEnd = TraceStart + FVector::UpVector;
+
+    FCollisionShape CollisionShape = FCollisionShape::MakeBox(BuildingExtents / 2);
+    FCollisionQueryParams CollisionParams;
+    CollisionParams.AddIgnoredActor(this);
+    CollisionParams.bTraceComplex = false;
+
+    TArray<FHitResult> OutHits;
+    bool bAnyHit = GetWorld()->SweepMultiByChannel(
+        OutHits, TraceStart, TraceEnd, GetActorRotation().Quaternion(), ECC_Visibility, CollisionShape, CollisionParams);
+    if (bAnyHit) return;
+
+    bCanPlaceBuilding = true;
+}
+
+bool ARTSBaseBuilding::HasPlacementTag(const FHitResult& HitResult, FName Tag) const
+{
+    if (!Tag.IsValid() || Tag == NAME_None) return false;
+
+    AActor* HitActor = HitResult.GetActor();
+    if (HitActor && HitActor->ActorHasTag(Tag)) return true;
+
+    UPrimitiveComponent* HitComp = HitResult.GetComponent();
+    if (HitComp && HitComp->ComponentTags.Contains(Tag)) return true;
+
+    return false;
+}
+
+void ARTSBaseBuilding::ToggleBuildingValidity(bool bValid)
+{
+    BuildingStaticMesh->SetScalarParameterValueOnMaterials("Invalid", bValid);
 }
 
 void ARTSBaseBuilding::PlaceBuilding(const FInputActionValue& Value)
 {
     if (!GetWorld()) return;
 
+    if (!bCanPlaceBuilding)
+    {
+        Destroy();
+        return;
+    }
+
     GetWorld()->GetTimerManager().ClearTimer(PlacementValidationTimer);
 
     this->SetActorEnableCollision(true);
 }
 
-void ARTSBaseBuilding::CancelBuildingPlacement(const FInputActionValue& Value) 
-{
-
-}
+void ARTSBaseBuilding::CancelBuildingPlacement(const FInputActionValue& Value) {}

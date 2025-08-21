@@ -60,4 +60,20 @@ protected:
 private:
     UPROPERTY()
     FTimerHandle PlacementValidationTimer;
+
+    UPROPERTY()
+    FName RequiredTag = "CanPlaceBuildings";
+
+    UPROPERTY()
+    bool bCanPlaceBuilding = false;
+
+    UPROPERTY()
+    float PlacementZOffset = 0.0f;
+
+    UPROPERTY()
+    FVector BuildingExtents = FVector(700.0, 700.0, 700.0);
+
+    bool HasPlacementTag(const FHitResult& HitResult, FName Tag) const;
+
+    void ToggleBuildingValidity(bool bValid);
 };
