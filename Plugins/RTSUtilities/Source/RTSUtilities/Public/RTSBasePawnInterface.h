@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "RTSLib.h"
+#include "RTSBaseBuilding.h"
 #include "RTSBasePawnInterface.generated.h"
 
 UINTERFACE(MinimalAPI)
@@ -20,4 +21,7 @@ class RTSUTILITIES_API IRTSBasePawnInterface
 public:
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "BasePawnInterface") 
     EPawnType GetPawnType();
+
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "BasePawnInterface")
+    TArray<TSubclassOf<ARTSBaseBuilding>> GetBuildingOptions();
 };

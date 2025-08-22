@@ -35,6 +35,7 @@ public:
     void MoveToLocation_Implementation(const FVector TargetLocation) override;
 
     EPawnType GetPawnType_Implementation() override { return PawnType; }
+    TArray<TSubclassOf<ARTSBaseBuilding>> GetBuildingOptions_Implementation() override { return BuildOptions; };
 
     int32 GetFaction_Implementation() override { return FactionID; };
     void SetFaction_Implementation(int32 NewFaction) override;
@@ -56,6 +57,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pawn")
     EPawnType PawnType = EPawnType::Villager;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn")
+    TArray<TSubclassOf<ARTSBaseBuilding>> BuildOptions;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn")
     int32 FactionID = 0;
