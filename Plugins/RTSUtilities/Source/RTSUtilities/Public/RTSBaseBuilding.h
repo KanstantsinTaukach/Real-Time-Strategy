@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "RTSSelectableInterface.h"
 #include "RTSFactionInterface.h"
+#include "RTSBaseActorInterface.h"
 #include "RTSBaseBuilding.generated.h"
 
 class UBoxComponent;
@@ -15,7 +16,10 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
-class RTSUTILITIES_API ARTSBaseBuilding : public AActor, public IRTSSelectableInterface, public IRTSFactionInterface
+class RTSUTILITIES_API ARTSBaseBuilding : public AActor,
+                                          public IRTSSelectableInterface,
+                                          public IRTSFactionInterface,
+                                          public IRTSBaseActorInterface
 {
     GENERATED_BODY()
 
@@ -35,6 +39,9 @@ public:
     void PlaceBuilding(const FInputActionValue& Value);
 
     void CancelBuildingPlacement(const FInputActionValue& Value);
+
+    EActorType GetActorType_Implementation() override { return ActorType; }
+    TArray<TSubclassOf<ARTSBaseBuilding>> GetBuildingOptions_Implementation() override { return BuildOptions; };
 
 protected:
     virtual void BeginPlay() override;
@@ -56,6 +63,12 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building")
     TObjectPtr<UInputAction> PlaceAction;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pawn")
+    EActorType ActorType = EActorType::House;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn")
+    TArray<TSubclassOf<ARTSBaseBuilding>> BuildOptions;
 
 private:
     UPROPERTY()

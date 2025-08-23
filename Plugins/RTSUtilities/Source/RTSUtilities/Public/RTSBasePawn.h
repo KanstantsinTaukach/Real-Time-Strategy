@@ -6,7 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "RTSSelectableInterface.h"
 #include "RTSNavigableInterface.h"
-#include "RTSBasePawnInterface.h"
+#include "RTSBaseActorInterface.h"
 #include "RTSFactionInterface.h"
 #include "RTSLib.h"
 #include "RTSBasePawn.generated.h"
@@ -20,7 +20,7 @@ UCLASS()
 class RTSUTILITIES_API ARTSBasePawn : public APawn,
                                       public IRTSSelectableInterface,
                                       public IRTSNavigableInterface,
-                                      public IRTSBasePawnInterface,
+                                      public IRTSBaseActorInterface,
                                       public IRTSFactionInterface
 {
     GENERATED_BODY()
@@ -34,7 +34,7 @@ public:
 
     void MoveToLocation_Implementation(const FVector TargetLocation) override;
 
-    EPawnType GetPawnType_Implementation() override { return PawnType; }
+    EActorType GetActorType_Implementation() override { return ActorType; }
     TArray<TSubclassOf<ARTSBaseBuilding>> GetBuildingOptions_Implementation() override { return BuildOptions; };
 
     int32 GetFaction_Implementation() override { return FactionID; };
@@ -56,7 +56,7 @@ protected:
     TObjectPtr<UFloatingPawnMovement> FloatingPawnMovement;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pawn")
-    EPawnType PawnType = EPawnType::Villager;
+    EActorType ActorType = EActorType::Villager;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn")
     TArray<TSubclassOf<ARTSBaseBuilding>> BuildOptions;

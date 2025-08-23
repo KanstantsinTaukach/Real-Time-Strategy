@@ -2,6 +2,7 @@
 
 #include "RTSHUD.h"
 #include "RTSBasePawn.h"
+#include "RTSBaseBuilding.h"
 
 void ARTSHUD::DrawHUD()
 {
@@ -37,6 +38,39 @@ void ARTSHUD::SelectActorsInRect()
     FVector2D FirstPoint = SelectionRectStart;
     FVector2D SecondPoint = SelectionRectStart + SelectionRectSize;
 
-    GetActorsInSelectionRectangle<ARTSBasePawn>(FirstPoint, SecondPoint, SelectedActors, false);
-    bSelectActors = false;
+    TArray<ARTSBasePawn*> SelectedPawns;
+    GetActorsInSelectionRectangle<ARTSBasePawn>(FirstPoint, SecondPoint, SelectedPawns, false);
+
+    if (SelectedPawns.Num() > 0)
+    {
+        bSelectActors = false;
+
+        for (const auto SelectedPawn : SelectedPawns)
+        {
+            if (SelectedPawn)
+            {
+                SelectedActors.AddUnique(SelectedPawn);
+            }
+        }
+
+        return;
+    }
+
+    TArray<ARTSBaseBuilding*> SelectedBuildings;
+    GetActorsInSelectionRectangle<ARTSBaseBuilding>(FirstPoint, SecondPoint, SelectedBuildings, false);
+
+    if (SelectedBuildings.Num() > 0)
+    {
+        bSelectActors = false;
+
+        for (const auto SelectedBuilding : SelectedBuildings)
+        {
+            if (SelectedBuilding)
+            {
+                SelectedActors.AddUnique(SelectedBuilding);
+            }
+        }
+
+        return;
+    }
 }

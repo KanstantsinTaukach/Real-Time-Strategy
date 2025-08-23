@@ -13,9 +13,11 @@ enum class EResourceTypes : uint8
 };
 
 UENUM(BlueprintType)
-enum class EPawnType : uint8
+enum class EActorType : uint8
 {
     Villager UMETA(DisplayName = "Villager"),
     Knight UMETA(DisplayName = "Knight"),
-    Paladin UMETA(DisplayName = "Paladin")
+    Paladin UMETA(DisplayName = "Paladin"),
+
+    House UMETA(DisplayName = "House")
 };

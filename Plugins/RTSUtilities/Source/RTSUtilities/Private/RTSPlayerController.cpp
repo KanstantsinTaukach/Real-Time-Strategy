@@ -132,7 +132,7 @@ void ARTSPlayerController::SelectMultipleActors()
         }
         SelectedActors.Empty();
 
-        TArray<ARTSBasePawn*> AllSelectedActors = GameHUD->GetSelectedActors();
+        TArray<AActor*> AllSelectedActors = GameHUD->GetSelectedActors();
 
         if (AllSelectedActors.Num() == 1)
         {
